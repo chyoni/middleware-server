@@ -1,0 +1,27 @@
+#  docker build -t docker-gs-ping:multistage -f Dockerfile.multistage .
+
+## Build
+FROM golang:1.19-buster AS build
+
+WORKDIR /app
+
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+
+COPY *.go ./
+
+RUN go build -o /middleware-server
+
+## Deploy
+FROM gcr.io/distroless/base-debian10
+
+WORKDIR /
+
+COPY --from=build /middleware-server /middleware-server
+
+EXPOSE 8081
+
+USER nonroot:nonroot
+
+ENTRYPOINT ["/middleware-server"]
