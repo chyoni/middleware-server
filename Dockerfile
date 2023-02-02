@@ -1,13 +1,17 @@
 FROM golang:1.19-alpine
 
+RUN apk add build-base
+
 WORKDIR /app
 
-COPY go.mod ./
-COPY go.sum ./
+# COPY go.mod ./
+# COPY go.sum ./
 
-RUN go mod download
+# RUN go mod download
 
-COPY *.go ./
+# COPY *.go ./
+
+COPY . /app
 
 RUN go build -o /middleware-server
 
