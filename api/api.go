@@ -1,6 +1,8 @@
 package api
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 func CountRecords(db *sql.DB) (int, error) {
 	rows, err := db.Query("SELECT COUNT(*) FROM message")

@@ -19,22 +19,12 @@ type Message struct {
 	Value string `json:"value"`
 }
 
-var db *sql.DB
-
-// ! handler function
-func home(c echo.Context) error {
-	return rootHandler(db, c)
-}
-func ping(c echo.Context) error {
-	return c.JSON(http.StatusOK, struct{ Status string }{Status: "OK"})
-}
-func send(c echo.Context) error {
-	return sendHandler(db, c)
-}
-
 // ! handlers
 func rootHandler(db *sql.DB, c echo.Context) error {
 	r, err := api.CountRecords(db)
+	print(r)
+	print(err)
+
 	if err != nil {
 		return c.HTML(http.StatusInternalServerError, err.Error())
 	}
@@ -64,19 +54,23 @@ func sendHandler(db *sql.DB, c echo.Context) error {
 
 func main() {
 	e := echo.New()
-
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-
 	db, err := database.InitStore()
 	if err != nil {
 		log.Fatalf("failed to initialise the store: %s", err)
 	}
 	defer db.Close()
 
-	e.GET("/", home)
-	e.GET("/ping", ping)
-	e.POST("/send", send)
+	e.GET("/", func(c echo.Context) error {
+		return rootHandler(db, c)
+	})
+	e.GET("/ping", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, struct{ Status string }{Status: "OK"})
+	})
+	e.POST("/send", func(c echo.Context) error {
+		return sendHandler(db, c)
+	})
 
 	httpPort := os.Getenv("HTTP_PORT")
 	if httpPort == "" {
