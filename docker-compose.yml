@@ -1,0 +1,40 @@
+services:
+  middleware-server-roach:
+    depends_on:
+      - roach
+    build:
+      context: .
+    container_name: middleware-server
+    hostname: middleware-server
+    networks:
+      - go_middlewareserver
+    ports:
+      - 80:8081
+    environment:
+      - PGUSER=${PGUSER:-cwchoi}
+      - PGPASSWORD=${PGPASSWORD:?database password not set}
+      - PGHOST=${PGHOST:-db}
+      - PGPORT=${PGPORT:-26257}
+      - PGDATABASE=${PGDATABASE:-middlewareserver}
+    deploy:
+      restart_policy:
+        condition: on-failure
+  roach:
+    image: cockroachdb/cockroach:latest-v20.1
+    container_name: roach
+    hostname: db
+    networks:
+      - go_middlewareserver
+    ports:
+      - 26257:26257
+      - 8081:8081
+    volumes:
+      - roach:/cockroach/cockroach-data
+    command: start-single-node --insecure
+
+volumes:
+  roach:
+  
+networks:
+  go_middlewareserver:
+    driver: bridge
