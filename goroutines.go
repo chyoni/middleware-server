@@ -13,6 +13,8 @@ func sendOnly(c chan<- int) {
 // ! <-chan 이렇게 쓰면 채널로 뭔가를 받기만 가능하다.
 func receiveOnly(c <-chan int) {
 	for {
+		// ! 채널을 통해 메시지를 받는 행위는 blocking operation이다.
+		// ! 즉, 이 채널을 통해 메시지를 받는 statement가 있으면 메시지가 들어올 때 까지 하위 statement를 실행하지 않는다.
 		data, ok := <-c
 		if !ok {
 			break
