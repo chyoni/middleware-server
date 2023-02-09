@@ -17,3 +17,9 @@
 ### go mod tidy
 
 > 쓰지 않는 packages는 다 날려준다.
+
+
+### Go routines
+
+- 동시에 여러개를 실행할 수 있는 병렬적 실행 방법
+- go routine과 통신하기 위해서는 channel이 필요하다.
